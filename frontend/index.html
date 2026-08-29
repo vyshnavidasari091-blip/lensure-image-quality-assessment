@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lensure — Image Quality Inspector</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="topbar">
+
+      <div class="brand">
+        <div class="brand-icon">◈</div>
+
+        <div>
+          <div class="brand-name">Lensure</div>
+          <div class="brand-subtitle">
+            Image Quality Assessment
+          </div>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Main navigation">
+        <button
+          type="button"
+          class="tab active"
+          data-view="inspect"
+        >
+          Inspect
+        </button>
+
+        <button
+          type="button"
+          class="tab"
+          data-view="history"
+        >
+          History
+        </button>
+      </nav>
+
+      <div class="header-status">
+        <span class="status-dot"></span>
+        System ready
+      </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main>
+
+      <!-- ===================================================
+           INSPECT VIEW
+           =================================================== -->
+
+      <section
+        id="view-inspect"
+        class="view active"
+      >
+
+        <div class="workspace">
+
+          <!-- ===============================================
+               UPLOAD PANEL
+               =============================================== -->
+
+          <section class="panel upload-panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <p class="section-label">INPUT</p>
+
+                <h1>Image inspection</h1>
+
+                <p class="panel-description">
+                  Upload an image to evaluate its visual quality
+                  and detect common image defects.
+                </p>
+              </div>
+
+            </div>
+
+
+            <!-- UPLOAD AREA -->
+
+            <div
+              id="dropzone"
+              class="dropzone"
+              tabindex="0"
+              role="button"
+              aria-label="Upload image"
+            >
+
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/bmp"
+                hidden
+              />
+
+
+              <!-- EMPTY UPLOAD STATE -->
+
+              <div
+                id="dzEmpty"
+                class="dz-empty"
+              >
+
+                <div class="upload-symbol">
+                  ↑
+                </div>
+
+                <h2>Upload an image</h2>
+
+                <p>
+                  Drag and drop your image here
+                </p>
+
+                <span class="or-text">or</span>
+
+                <button
+                  id="chooseBtn"
+                  type="button"
+                  class="choose-btn"
+                >
+                  Choose Image
+                </button>
+
+                <div class="file-info">
+                  JPG · PNG · WEBP · BMP
+                  <span>•</span>
+                  Maximum 15 MB
+                </div>
+
+              </div>
+
+
+              <!-- IMAGE PREVIEW -->
+
+              <div
+                id="previewWrap"
+                class="preview-wrap"
+                hidden
+              >
+
+                <div class="preview-top">
+
+                  <div>
+                    <span class="preview-label">
+                      SELECTED IMAGE
+                    </span>
+
+                    <span
+                      id="fileName"
+                      class="file-name"
+                    >
+                      —
+                    </span>
+                  </div>
+
+                  <button
+                    id="changeBtn"
+                    type="button"
+                    class="change-btn"
+                  >
+                    Change
+                  </button>
+
+                </div>
+
+                <div class="preview-box">
+
+                  <img
+                    id="preview"
+                    class="dz-preview"
+                    alt="Selected image preview"
+                  />
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <p
+              id="uploadError"
+              class="error-text"
+              hidden
+            ></p>
+
+
+            <!-- ANALYZE -->
+
+            <button
+              id="analyzeBtn"
+              type="button"
+              class="btn primary"
+              disabled
+            >
+              Analyze Image
+            </button>
+
+            <p class="helper-text">
+              Analysis uses image statistics, rule-based checks
+              and the trained quality model.
+            </p>
+
+          </section>
+
+
+          <!-- ===============================================
+               RESULT PANEL
+               =============================================== -->
+
+          <section
+            class="panel result-panel"
+            id="resultPanel"
+          >
+
+            <div class="result-heading">
+
+              <div>
+                <p class="section-label">OUTPUT</p>
+
+                <h2>Assessment result</h2>
+              </div>
+
+              <span
+                id="resultStatus"
+                class="result-status"
+                hidden
+              >
+                ANALYSIS COMPLETE
+              </span>
+
+            </div>
+
+
+            <!-- EMPTY -->
+
+            <div
+              id="resultEmpty"
+              class="result-empty"
+            >
+
+              <div class="empty-mark">
+                —
+              </div>
+
+              <strong>
+                No analysis yet
+              </strong>
+
+              <p>
+                Upload an image and run the assessment
+                to view the result.
+              </p>
+
+            </div>
+
+
+            <!-- LOADING -->
+
+            <div
+              id="resultLoading"
+              class="result-loading"
+              hidden
+            >
+
+              <div class="spinner"></div>
+
+              <strong>
+                Analyzing image
+              </strong>
+
+              <p>
+                Running quality checks and model inference…
+              </p>
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <div
+              id="resultContent"
+              class="result-content"
+              hidden
+            >
+
+              <!-- SCORE -->
+
+              <div class="score-summary">
+
+                <div class="score-dial">
+
+                  <svg
+                    viewBox="0 0 120 120"
+                    class="dial-svg"
+                    aria-hidden="true"
+                  >
+
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="52"
+                      class="dial-track"
+                    />
+
+                    <circle
+                      id="dialArc"
+                      cx="60"
+                      cy="60"
+                      r="52"
+                      class="dial-arc"
+                    />
+
+                  </svg>
+
+                  <div class="dial-center">
+
+                    <span id="scoreNum">
+                      0
+                    </span>
+
+                    <span class="dial-unit">
+                      /100
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="score-details">
+
+                  <span class="metric-label">
+                    QUALITY SCORE
+                  </span>
+
+                  <span
+                    id="qualityLabel"
+                    class="quality-pill"
+                  >
+                    —
+                  </span>
+
+                  <p
+                    id="primaryIssue"
+                    class="primary-issue"
+                    hidden
+                  ></p>
+
+                  <p
+                    id="modelVersion"
+                    class="model-version"
+                  ></p>
+
+                </div>
+
+              </div>
+
+
+              <!-- DETECTED ISSUES -->
+
+              <div class="result-section issues-section">
+
+                <div class="section-title">
+                  <span>Detected issues</span>
+                </div>
+
+                <div
+                  id="issuesList"
+                  class="issues-list"
+                ></div>
+
+              </div>
+
+
+              <!-- IMAGE STATISTICS -->
+
+              <div class="result-section">
+
+                <div class="section-title">
+                  <span>Image statistics</span>
+                </div>
+
+                <div
+                  id="statsGrid"
+                  class="stats-grid"
+                ></div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           HISTORY VIEW
+           =================================================== -->
+
+      <section
+        id="view-history"
+        class="view"
+      >
+
+        <section class="panel history-panel">
+
+          <div class="history-head">
+
+            <div>
+              <p class="section-label">RECORDS</p>
+
+              <h2>Previous analyses</h2>
+
+              <p>
+                Results saved from previous image assessments.
+              </p>
+            </div>
+
+            <button
+              id="refreshHistory"
+              type="button"
+              class="btn ghost"
+            >
+              Refresh
+            </button>
+
+          </div>
+
+
+          <!-- EMPTY HISTORY -->
+
+          <div
+            id="historyEmpty"
+            class="history-empty"
+          >
+
+            <strong>No analyses yet.</strong>
+
+            <p>
+              Completed assessments will appear here.
+            </p>
+
+          </div>
+
+
+          <!-- HISTORY TABLE -->
+
+          <div
+            id="historyTableWrap"
+            class="table-wrap"
+            hidden
+          >
+
+            <table class="history-table">
+
+              <thead>
+
+                <tr>
+                  <th>Image</th>
+                  <th>Score</th>
+                  <th>Result</th>
+                  <th>Analyzed</th>
+                  <th></th>
+                </tr>
+
+              </thead>
+
+              <tbody id="historyBody"></tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>
