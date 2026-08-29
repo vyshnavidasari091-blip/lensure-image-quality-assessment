@@ -60,7 +60,7 @@ Rather than downloading a dataset, this project generates its own pristine image
 
 Thresholds for the rule-based detector (`SHARPNESS_BLUR_THRESH`, `NOISE_SIGMA_THRESH`, etc. in `infer.py`) were set empirically, by looking at the feature distributions for each synthetic class and picking cut-points that separate them.
 
-## 4. Evaluation (requirement §9)
+## 4. Evaluation 
 
 Run `python -m app.ml.train` to reproduce this. It evaluates on a held-out validation set of 300 synthetic images not seen during training.
 
@@ -86,11 +86,11 @@ The validation set is procedurally generated, and real photographs bring in comb
 
 So the 98.33% accuracy figure should be read as synthetic validation performance; real-world performance is likely lower.
 
-## 5. Explainability (requirement §10)
+## 5. Explainability 
 
 Every response includes the raw stats behind the decision — sharpness, noise_sigma, brightness_mean, overexposed/underexposed fraction, entropy, edge_density, colorfulness — plus, when the CNN is loaded, its full per-class probability distribution (`cnn_class_probs`). That way a reviewer can see why an issue was flagged, not just that it was. Each issue also carries its own confidence score.
 
-## 6. API reference (requirement §12)
+## 6. API reference 
 
 | Method | Path | Description |
 |---|---|---|
@@ -121,7 +121,7 @@ curl -F "file=@photo.jpg;type=image/jpeg" http://localhost:8000/api/analyze
 
 Invalid or unreadable files return 422 with a descriptive error (and are still logged with `quality_label: "INVALID"` for auditability). Oversized files return 413, wrong content types return 415.
 
-## 7. Database (requirement §12)
+## 7. Database 
 
 SQLite by default, no setup needed, via SQLAlchemy. `backend/app/db/models.py` defines a single `analysis_results` table (id, filename, stored_path, quality_score, quality_label, issues (JSON), stats (JSON), model_version, error, created_at). Tables are created automatically on startup via `Base.metadata.create_all`. To switch to Postgres, just set `DATABASE_URL=postgresql://user:pass@host:5432/dbname` — no code changes required.
 
@@ -129,7 +129,7 @@ SQLite by default, no setup needed, via SQLAlchemy. `backend/app/db/models.py` d
 
 Plain HTML/CSS/JS, no build step, served by FastAPI at `/` from `frontend/`. Supports drag-and-drop or click-to-upload, a dial-style display for the overall score, a per-issue list with severity and confidence, a stats panel, and a History tab backed by `GET /api/results`. Loading, success, and error states are all handled explicitly — see `frontend/app.js`.
 
-## 9. Deployment notes (requirement §11)
+## 9. Deployment notes 
 
 This was run and tested locally with `uvicorn`, without Docker. The source code is pushed to this GitHub repository, which anyone can clone and run following the setup steps in section 1 above.
 
@@ -159,7 +159,7 @@ frontend/       # static HTML/CSS/JS
 samples/        # example images across each quality condition
 ```
 
-## 11. Sample images (requirement §12)
+## 11. Sample images 
 
 `samples/` has one procedurally-generated example per condition (`clean.jpg`, `blur.jpg`, `noise.jpg`, `overexposed.jpg`, `underexposed.jpg`, `corrupt.jpg`) for quick manual testing — upload any of them through the UI or via `curl` to see each issue type detected end-to-end.
 
