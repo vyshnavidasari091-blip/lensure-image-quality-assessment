@@ -1,5 +1,7 @@
 # Lensure — AI-Powered Image Quality & Defect Detection
 
+Live Demo:https://lensure-image-quality-assessment-2.onrender.com
+
 Lensure is a full-stack app that takes an uploaded image, runs it through a set of interpretable image-quality features plus a small hybrid deep-learning model, and returns a structured quality assessment: an overall score, a label (ACCEPTABLE / DEGRADED / DEFECTIVE), and a per-issue breakdown with severity and confidence. Results are stored and can be browsed later from a history view.
 
 No external AI or vision APIs are used anywhere in the pipeline, and no API keys are needed.
